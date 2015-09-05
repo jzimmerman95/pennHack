@@ -143,8 +143,8 @@ var dataset = [
 //Create SVG element
 var svg = d3.select("#visualisation")
             .append("svg")
-            .attr("width", w)
-            .attr("height", h);
+            .attr("width", 1000)
+            .attr("height", 500);
 
 svg.selectAll("circle")
    .data(dataset)
@@ -157,6 +157,23 @@ svg.selectAll("circle")
         return d[1];
    })
    .attr("r", 5);
+
+svg.selectAll("text")
+   .data(dataset)
+   .enter()
+   .append("text")
+   .text(function(d) {
+        return d[0] + "," + d[1];
+   })
+   .attr("x", function(d) {
+        return d[0];
+   })
+   .attr("y", function(d) {
+        return d[1];
+   })
+   .attr("font-family", "sans-serif")
+   .attr("font-size", "11px")
+   .attr("fill", "red");
 
 
 
