@@ -1,13 +1,22 @@
-.axis path {
-    fill: none;
-    stroke: #777;
-    shape-rendering: crispEdges;
+body {
+  font: 11px sans-serif;
+  background-color: black;
 }
-.axis text {
-    font-family: Lato;
-    font-size: 13px;
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #fff;
+  shape-rendering: crispEdges;
 }
-.legend {
-    font-size: 14px;
-    font-weight: bold;
+
+.dot {
+  stroke: #fff;
+}
+
+.tooltip {
+  position: absolute;
+  width: 200px;
+  height: 28px;
+  pointer-events: none;
 }

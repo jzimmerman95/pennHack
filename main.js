@@ -1,179 +1,112 @@
-// var data = [{
-//     "Client": "ABC",
-//     "sale": "202",
-//     "year": "2000"
-// }, {
-//     "Client": "ABC",
-//     "sale": "215",
-//     "year": "2002"
-// }, {
-//     "Client": "ABC",
-//     "sale": "179",
-//     "year": "2004"
-// }, {
-//     "Client": "ABC",
-//     "sale": "199",
-//     "year": "2006"
-// }, {
-//     "Client": "ABC",
-//     "sale": "134",
-//     "year": "2008"
-// }, {
-//     "Client": "ABC",
-//     "sale": "176",
-//     "year": "2010"
-// }, {
-//     "Client": "XYZ",
-//     "sale": "100",
-//     "year": "2000"
-// }, {
-//     "Client": "XYZ",
-//     "sale": "215",
-//     "year": "2002"
-// }, {
-//     "Client": "XYZ",
-//     "sale": "179",
-//     "year": "2004"
-// }, {
-//     "Client": "XYZ",
-//     "sale": "199",
-//     "year": "2006"
-// }, {
-//     "Client": "XYZ",
-//     "sale": "134",
-//     "year": "2008"
-// }, {
-//     "Client": "XYZ",
-//     "sale": "176",
-//     "year": "2013"
-// }];
-
-// var dataGroup = d3.nest()
-//     .key(function(d) {
-//         return d.Client;
-//     })
-//     .entries(data);
 
 
-// var vis = d3.select("#visualisation"),
-//     WIDTH = 1000,
-//     HEIGHT = 500,
-//     MARGINS = {
-//         top: 50,
-//         right: 20,
-//         bottom: 50,
-//         left: 50
-//     },
-// 	xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([d3.min(data, function(d) {
-// 	    	return d.year;
-// 		}), d3.max(data, function(d) {
-// 	    	return d.year;
-// 		})]),
-// 	yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([d3.min(data, function(d) {
-// 		    return d.sale;
-// 		}), d3.max(data, function(d) {
-// 		    return d.sale;
-// 		})]),
-// 	xAxis = d3.svg.axis()
-//     .scale(xScale),
-// 	yAxis = d3.svg.axis()
-//     .scale(yScale)
-//     .orient("left");
 
-// vis.append("svg:g")
-//     .attr("class","axis")
-//     .attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")
-//     .call(xAxis);
- 
-// vis.append("svg:g")
-//     .attr("class","axis")
-//     .attr("transform", "translate(" + (MARGINS.left) + ",0)")
-//     .call(yAxis);
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
 
-// var lineGen = d3.svg.line()
-//     .x(function(d) {
-//         return xScale(d.year);
-//     })
-//     .y(function(d) {
-//         return yScale(d.sale);
-//     })
-//     .interpolate("basis");
+/* 
+ * value accessor - returns the value to encode for a given data object.
+ * scale - maps value to a visual display encoding, such as a pixel position.
+ * map function - maps from data value to display value
+ * axis - sets up axis
+ */ 
 
-// lSpace = WIDTH/dataGroup.length;
+// setup x 
+var xValue = function(d) { return d["Time Asleep"];}, // data -> value
+    xScale = d3.scale.linear().range([0, width]), // value -> display
+    xMap = function(d) { return xScale(xValue(d));}, // data -> display
+    xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
-// dataGroup.forEach(function(d, i) {
-// 	vis.append('svg:path')
-// 	    .attr('d', lineGen(d.values, xScale, yScale))
-// 	    .attr('stroke', function(d, j) {
-// 	        return "hsl(" + Math.random() * 360 + ",100%,50%)";
-// 	    })
-// 	    .attr('stroke-width', 2)
-// 	    .attr('id', 'line_' + d.key)
-// 	    .attr('fill', 'none');
+// setup y
+var yValue = function(d) { return d.Intensity;}, // data -> value
+    yScale = d3.scale.linear().range([height, 0]), // value -> display
+    yMap = function(d) { return yScale(yValue(d));}, // data -> display
+    yAxis = d3.svg.axis().scale(yScale).orient("left");
 
-//     vis.append("text")
-// 	    .attr("x", (lSpace / 2) + i * lSpace)
-// 	    .attr("y", HEIGHT)
-// 	    .style("fill", "black")
-// 	    .attr("class", "legend").on('click', function() {
-// 		    var active = d.active ? false : true;
-// 		    var opacity = active ? 0 : 1;
-		 
-// 		    d3.select("#line_" + d.key).style("opacity", opacity);
-		 
-// 		    d.active = active;
-// 		})
-// 	    .text(d.key);
-// });
+// setup fill color
+var cValue = function(d) { return d.Manufacturer;},
+    color = d3.scale.category10();
 
+// add the graph canvas to the body of the webpage
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var dataset = [
-                  [ 5,     20 ],
-                  [ 480,   90 ],
-                  [ 250,   50 ],
-                  [ 100,   33 ],
-                  [ 330,   95 ],
-                  [ 410,   12 ],
-                  [ 475,   44 ],
-                  [ 25,    67 ],
-                  [ 85,    21 ],
-                  [ 220,   88 ]
-              ];
+// add the tooltip area to the webpage
+var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
 
-//Create SVG element
-var svg = d3.select("#visualisation")
-            .append("svg")
-            .attr("width", 1000)
-            .attr("height", 500);
+// load data
+d3.csv("cereal.csv", function(error, data) {
 
-svg.selectAll("circle")
-   .data(dataset)
-   .enter()
-   .append("circle")
-   .attr("cx", function(d) {
-        return d[0];
-   })
-   .attr("cy", function(d) {
-        return d[1];
-   })
-   .attr("r", 5);
+  // change string (from CSV) into number format
+  data.forEach(function(d) {
+    d["Time Asleep"] = +d["Time Asleep"];
+    d.Intensity = +d.Intensity;
+//    console.log(d);
+  });
 
-svg.selectAll("text")
-   .data(dataset)
-   .enter()
-   .append("text")
-   .text(function(d) {
-        return d[0] + "," + d[1];
-   })
-   .attr("x", function(d) {
-        return d[0];
-   })
-   .attr("y", function(d) {
-        return d[1];
-   })
-   .attr("font-family", "sans-serif")
-   .attr("font-size", "11px")
-   .attr("fill", "red");
+  // don't want dots overlapping axis, so add in buffer to data domain
+  xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
+  yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
+
+  // x-axis
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+      .style("fill", "white")
+    .append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .style("fill", "white")
+      .text("Time Asleep (hours)");
+
+  // y-axis
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+      .style("fill", "white")
+    .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .style("fill", "white")
+      .text("Intensity");
+
+  // draw dots
+  svg.selectAll(".dot")
+      .data(data)
+    .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", 3.5)
+      .attr("cx", xMap)
+      .attr("cy", yMap)
+      .style("fill", function(d) { return color(cValue(d));}) 
+      .on("mouseover", function(d) {
+          tooltip.transition()
+               .duration(200)
+               .style("opacity", .9)
+               .style("fill", "white");
+          tooltip.html(d["Time Asleep"] + "<br/> (" + xValue(d) 
+          + ", " + yValue(d) + ")")
+               .style("left", (d3.event.pageX + 5) + "px")
+               .style("top", (d3.event.pageY - 28) + "px");
+      })
+      .on("mouseout", function(d) {
+          tooltip.transition()
+               .duration(500)
+               .style("opacity", 0);
+      });
+});
 
 
 
